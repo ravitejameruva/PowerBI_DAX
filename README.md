@@ -100,7 +100,7 @@ Person Details:
 Let's say we have a problem statement that say's we need to check voting eligibility for the given dataset. Which means we need to check row by row so which leads us to create a calculated column because it automatically creates row context.
 
 Eligible(Calculated Column) = IF (
-                'Person'[Age] > 18,
+                'Person'[Age] >= 18,
                 "T",
                 "F"
               )
