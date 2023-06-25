@@ -17,3 +17,70 @@
 1. Measures are calculated on demand. Power BI calculates the correct value when the user requests it.
 2. Measures do not add to overall diskspace of the .pbix file.
 3. They are calculated based on the filters that are used by the report users. These filters combine to create the filter context.
+
+## Filter Context
+Filter Context is a set of filters applied to the data model before the evaluation of the dax starts.
+
+Products Table :
+
+| Product Key | Brand   |
+|-------------|---------|
+| 1           | BMW     |
+| 2           | Maruti  |
+| 3           | Huyndai |
+
+Sales Table:
+
+| Product Key | Sales Amount   |
+|-------------|----------------|
+| 1           | 10000000       |
+| 2           | 500000         |
+| 1           | 5000000        |
+| 2           | 800000         |
+| 3           | 1000000        |
+| 3           | 900000         |
+
+
+Table Visualization:
+
+|  Brand   |  Sum Of Sales Amount  |
+|----------|-----------------------|
+|  BMW     |  15000000             |
+|  Maruti  |  1300000              |
+|  Huyndai |  1900000              |
+
+Let's say we want to see total sales of Maruti Brand. So behind the scenes this is how it works, Firstly both the tables are connected to each other through Product key and has one to many cardinality where the filter flows from Product Table to Sales Table. Now let's understand filter context step by step:
+Set of filters applied -
+In the products table firstly Maruti brand is filtered and associated product key is captured.
+
+Products Table :
+
+| Product Key | Brand   |
+|-------------|---------|
+| 2           | Maruti  |
+
+
+Based on the product key the sales table is filtered.
+
+Sales Table:
+
+| Product Key | Sales Amount   |
+|-------------|----------------|
+| 2           | 500000         |
+| 2           | 800000         |
+
+Now the aggregation is applied on the sales table sales amount column for produtc key 2 which maruti brand.
+
+|  Brand   |  Sum Of Sales Amount  |
+|----------|-----------------------|
+|  Maruti  |  1300000              |
+
+Same filtering happens in the same way for other product keys as well.
+
+
+## Row Context
+1. It evaluates row by row.
+2. It checks the condition row by row and evaluates
+3. When you create a calculated column, row context will be created automatically.
+4. The expression used for calculated column will not be work for measures
+5. since, calculated columns will not work for aggregation functions.
