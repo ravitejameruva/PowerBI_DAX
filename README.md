@@ -84,3 +84,35 @@ Same filtering happens in the same way for other product keys as well.
 3. When you create a calculated column, row context will be created automatically.
 4. The expression used for calculated column will not be work for measures
 5. since, calculated columns will not work for aggregation functions.
+
+Person Details:
+
+| Name | Age |
+|------|-----|
+| A    | 18  |
+| B    | 10  |
+| C    | 25  |
+| D    | 35  |
+| E    | 28  |
+| F    | 38  |
+| G    | 17  |
+
+Let's say we have a problem statement that say's we need to check voting eligibility for the given dataset. Which means we need to check row by row so which leads us to create a calculated column because it automatically creates row context.
+
+Eligible(Calculated Column) = IF (
+                'Person'[Age] > 18,
+                "T",
+                "F"
+              )
+
+              
+| Name | Age | Eligible |
+|------|-----|----------|
+| A    | 18  | T        |
+| B    | 10  | F        |
+| C    | 25  | T        |
+| D    | 35  | T        |
+| E    | 28  | T        |
+| F    | 38  | T        |
+| G    | 17  | F        |
+
