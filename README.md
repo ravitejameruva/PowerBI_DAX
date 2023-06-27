@@ -3,7 +3,7 @@
 ## What is DAX ?
 1. DAX stands for DATA ANALYSIS EXPRESSION.
 2. DAX is a programming language that is used throughout MS power BI for creating Calculated Columns, Measures and Tables.
-3. DAX is a collection of functions, operators that can be used in a formula or expression to calculate or return on more values.
+3. DAX is a collection of functions, operators that can be used in a formula or expression to calculate or return one more values.
 4. By using DAX we can perform data analysis.
 
 ## Calculated Columns
@@ -116,3 +116,16 @@ Eligible(Calculated Column) = IF (
 | F    | 38  | T        |
 | G    | 17  | F        |
 
+
+## Data & Storage Types
+
+DAX uses 6 Datatypes to store values:
+
+| DAX Data Type | Power BI Data Type    | Storage Type                             | Example                          |
+|---------------|-----------------------|------------------------------------------|----------------------------------|
+| Integer       | Whole Number          | 64-bit                                   | Max : 9,223,372,036,854,775,807  |
+| Decimal       | Decimal Number        | Double-precision floating value          | 64-bit precision                 |
+| Currency      | Fixed Decimal Number  | Fixed Decimal Number(Stored as integere) | 317.9899                         |
+| DateTime      | DateTime, Date , Time | 64-bit                                   | 1/1/2020 12:00p = 43830.50       |
+| Boolean       | True/False            | True/False                               | True/False                       | 
+| String        | Unicode string        | 16-bit                                   | "Ravi Teja" = "RAVI TEJA"        |
