@@ -16,7 +16,7 @@
 ## Measures
 1. Measures are calculated on demand. Power BI calculates the correct value when the user requests it.
 2. Measures do not add to overall diskspace of the .pbix file.
-3. They are calculated based on the filters that are used by the report users. These filters combine to create the filter context.
+3. They are calculated based on the filters that are applied by the report users. These filters combine to create the filter context.
 
 ## Filter Context
 Filter Context is a set of filters applied to the data model before the evaluation of the dax starts.
@@ -129,3 +129,132 @@ DAX uses 6 Datatypes to store values:
 | DateTime      | DateTime, Date , Time | 64-bit                                   | 1/1/2020 12:00p = 43830.50       |
 | Boolean       | True/False            | True/False                               | True/False                       | 
 | String        | Unicode string        | 16-bit                                   | "Ravi Teja" = "RAVI TEJA"        |
+
+
+## DAX Engines
+
+DAX is powered by two internal engines:
+
+1. Formula Engine
+2. Storage Engine
+
+Which work together to compress & encode raw data and evaluate DAX queries.
+
+|              Formula Engine                        |                                Storage Engine                                            |    
+|----------------------------------------------------|------------------------------------------------------------------------------------------|
+| Recieves, interprets and executes all Dax Requests |  Compresses and encodes raw data, and only communicate with formula engine               |
+| Processes the DAX query then generates a list of   |  Receives a query plan from Formula Engine, executes it, and returns a datacache         |
+|   logical steps called a Query Plan.               |
+| Works with datacache sent back from the storage    |  Note: There are two types of storage engines based on the connection type you are using |
+  engine to evaluate the dax query and return        |  1. Vertipaq is used for data stored in-memory ( connected via import mode )
+  a result                                           |  2. DirectQuery is used for data read directly from the source.                          |
+
+  ## Query Evaluation in-depth
+
+  Example Dax Query:
+  
+  South_Sales =
+  CALCULATE(
+  [customer_sales],
+  FILTER(
+  'Customer',
+  'Customer'[region] = 'South'
+  )
+
+
+  1. Now this DAX query is received by the formula engine.
+  2. Formula Engine interprets the query and sends a query plan to the storage engine.
+  3. Storage engine executes the plan and sends a datacache back to the formula engine
+  4. Formula Engine runs the DAX againist the datacache and evaluates the result.
+
+
+  ## Vertipaq Columnar Data Structure
+
+  Vertipaq uses a columnar data structure, which stores data as individual columns (rather than rows or full tables) to quickly and
+  efficiently evaluate DAX queries.
+
+This is how we look at the table:
+
+  | product_id | product_group | product_category | wholesale_price |
+  |------------|---------------|------------------|-----------------|
+  | 1          | Whole Beans   | Coffee Beans     | 18              |
+  | 2          | Whole Beans   | Loose Tea        | 7               |
+  | 3          | Beverages     | Packaged Choco   | 20              |
+  | 4          | Food          | Bakery           | 15              |
+
+
+This is how vertipaq looks at the same table:
+
+  | product_id | 
+  |------------|
+  | 1          | 
+  | 2          | 
+  | 3          |
+  | 4          |
+
+
+  | product_group | 
+  |---------------|
+  | Whole Beans   | 
+  | Whole Beans   | 
+  | Beverages     | 
+  | Food          |
+
+
+  | product_category |
+  -------------------|
+  | Coffee Beans     |
+  | Loose Tea        |
+  | Packaged Choco   | 
+  | Bakery           |
+
+
+  | wholesale_price |
+  |-----------------|
+  | 18              |
+  | 7               |
+  | 20              |
+  | 15              |
+
+
+  ## Vertipaq Compression and Encoding
+
+  The goal of compression and encoding is to reduce the amount of memory needed to evaluate a dax query.
+
+  Based on a sample data, one or More of the following methods will be used:
+
+  1. Value Encoding : Mathematical process used to reduce the number of bits needed to store integer values.
+  2. Hash Encoding : Identifies the disticnt string values and creates a table with indexes.
+  3. Run Length Encoding : Reduces the size of a dataset by identifying repeated values found in adjacent rows
+
+ ### Value Encoding
+
+ It uses a mathematical process to determine relationships between the values in a column, and convert them into smaller values for storage. It only works for integer   values including currency, and cannot be applied to strings or floating - point values.
+
+ | City ID |
+ |---------|
+ | 20014   |
+ | 20206   |
+ | 20215   |
+ | 20009   |
+
+ MAX = 20215
+ 15 bits needed to store this value.
+
+ Vertipaq engine determines the relationship using mathematical process and stores it like this (removes 20 from front as that is common along the column)
+
+ | City ID |
+ |---------|
+ | 14      |
+ | 206     |
+ | 215     |
+ | 9       |
+
+ Now, MAX = 215
+requires only 8 bits needed to store this value.
+
+
+
+  
+ 
+ 
