@@ -253,6 +253,46 @@ This is how vertipaq looks at the same table:
  Now, MAX = 215
 requires only 8 bits needed to store this value.
 
+and vertipaq remebers what matematical process it used to determine the relationship in that column
+
+## Hash Encoding
+
+It builds a dictionary of distinct items in a column, assigns a unique integer value to each item, and stores the data using index values rather than the full text strings. With hash encoding storage requirements are defined by the number of unique items in the column, NOT by the length of the string values themselves.
+
+| Product             | Distinct Product | Distinct Index | Index |
+|---------------------|------------------|----------------|-------|
+| Coffee Beans        |  Coffe Beans     | 0              | 0     |
+| Tea                 |  Bakery          | 1              | 2     |
+| Bakery              |  Tea             | 2              | 1     |
+| Bakery              |                  |                | 1     |
+| Coffee Beans        |                  |                | 0     |
+| Tea                 |                  |                | 2     |
+
+
+## Run Length Encoding
+
+It reduces the size of a column by replacing duplicate rows with a table containing each distinct value and count of instances.
+
+| Numbers |
+|---------|
+| 10      |
+| 10      |
+| 9       |
+| 9       |
+| 10      |
+
+This is how data is stored
+
+| Numbers | Count |
+|---------|-------|
+| 10      | 3     |
+| 9       | 2     |
+
+
+Columns can have both Run Length and either Hash or Value Encoding. Compression type is determined by cardinality, number of repeat values, row count and datatype.
+
+
+
 
 
   
